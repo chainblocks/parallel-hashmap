@@ -45,10 +45,11 @@
 #include <utility>
 #include <array>
 #include <cassert>
+#include <atomic>
 
+#include "phmap_fwd_decl.h"
 #include "phmap_utils.h"
 #include "phmap_base.h"
-#include "phmap_fwd_decl.h"
 
 #if PHMAP_HAVE_STD_STRING_VIEW
     #include <string_view>
@@ -4004,7 +4005,7 @@ struct StringHashT
 
     size_t operator()(std::basic_string_view<CharT> v) const {
         std::string_view bv{reinterpret_cast<const char*>(v.data()), v.size() * sizeof(CharT)};
-        return phmap::Hash<std::string_view>{}(bv);
+        return std::hash<std::string_view>()(bv);
     }
 };
 
@@ -4046,6 +4047,7 @@ struct HashEq<std::wstring_view> : StringHashEqT<wchar_t> {};
 #endif
 
 // Supports heterogeneous lookup for pointers and smart pointers.
+// -------------------------------------------------------------
 template <class T>
 struct HashEq<T*> 
 {
@@ -4067,6 +4069,7 @@ struct HashEq<T*>
 
 private:
     static const T* ToPtr(const T* ptr) { return ptr; }
+
     template <class U, class D>
     static const T* ToPtr(const std::unique_ptr<U, D>& ptr) {
         return ptr.get();
