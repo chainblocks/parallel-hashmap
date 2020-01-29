@@ -112,14 +112,20 @@ if (PHMAP_BUILD_TESTS)
                   COPTS "-DUNORDERED_MAP_CXX17" DEPS gmock_main)
 
     phmap_cc_test(NAME dump_load SRCS "tests/dump_load_test.cc"
-                   COPTS "-DUNORDERED_MAP_CXX17" DEPS gmock_main)
+                  COPTS "-DUNORDERED_MAP_CXX17" DEPS gmock_main)
+
+    ## --------------- btree -----------------------------------------------
+    phmap_cc_test(NAME btree SRCS "tests/btree_test.cc"
+                  CLOPTS "-w" DEPS gmock_main)
 
 
 endif()
 
 if (PHMAP_BUILD_EXAMPLES)
     if(NOT MSVC)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wdisabled-optimization -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel  -Wswitch-default -Wno-unused")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wdisabled-optimization -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel  -Wswitch-default -Wno-unused -Wno-unknown-warning-option -Wno-gnu-zero-variadic-macro-arguments")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
     endif()
 
     set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -136,6 +142,7 @@ if (PHMAP_BUILD_EXAMPLES)
     add_executable(ex_insert_bench examples/insert_bench.cc phmap.natvis)
     add_executable(ex_knucleotide examples/knucleotide.cc phmap.natvis)
     add_executable(ex_dump_load examples/dump_load.cc phmap.natvis)
+    add_executable(ex_btree examples/btree.cc phmap.natvis)
 
     target_link_libraries(ex_knucleotide Threads::Threads)
     target_link_libraries(ex_bench Threads::Threads)
